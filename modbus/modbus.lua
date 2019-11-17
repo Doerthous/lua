@@ -31,7 +31,7 @@ local modbus = {
     CRC_ERR = 4,
 }
 
-function modbus:new(getc, setc)
+function modbus:new(getc, setc, timeout)
     local o = {}
 
     assert(getc ~= nil)
@@ -41,6 +41,7 @@ function modbus:new(getc, setc)
     self.__index = self
     self.getc = getc
     self.setc = setc
+    self.timeout = timeout or 100
     return o
 end
 

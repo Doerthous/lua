@@ -325,8 +325,8 @@ function modbus:read_holding_registers(id, address, count)
     return recv_res1(self, id, modbus.FC_READ_HD_REGS, count)
 end
 function modbus:read_input_registers(id, address, count)
-    send_cmd1(self, id, modbus.FC_READ_HD_REGS, address, count)
-    return recv_res1(self, id, modbus.FC_READ_HD_REGS, count)
+    send_cmd1(self, id, modbus.FC_READ_IN_REGS, address, count)
+    return recv_res1(self, id, modbus.FC_READ_IN_REGS, count)
 end
 function modbus:write_register(id, address, data)
     send_cmd1(self, id, modbus.FC_WRITE_REG, address, data)

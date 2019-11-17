@@ -87,6 +87,10 @@ static const struct luaL_Reg lib[] =
 
 int luaopen_cserial(lua_State *L) 
 {
+  #ifdef LUA_V51
+    luaL_register(L, "cserial", lib);
+  #else    
     luaL_newlib(L, lib);
+  #endif
     return 1;
 }

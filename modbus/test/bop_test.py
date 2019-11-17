@@ -28,3 +28,8 @@ with open('bop_test.lua', 'w') as f:
         b = random.randint(0,32)
         f.write("assert(bop.rshift(0x%X, 0x%X) == 0x%X)\n" % (a, b, a >> b))
 
+    for i in range(0, 1000):
+        a = random.randint(0,0xFFFFFFFF)
+        b = random.randint(0,32)
+        f.write("assert(bop.lshift(0x%X, 0x%X) == 0x%X)\n" % (a, b, a << b))        
+

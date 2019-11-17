@@ -124,7 +124,29 @@ local bop = {
         end
 
         return tonumber(str, 2)
-    end
+    end,
+
+    lshift = function(num, cnt)
+        local str = ""
+        while cnt > 0 do
+            cnt = cnt - 1
+            str = str .. "0"
+        end
+        while num > 0 do
+            if math.floor(num%2) == 1 then
+                str = "1"..str
+            else
+                str = "0"..str
+            end
+            num = math.floor(num/2)
+        end
+
+        if #str == 0 then
+            return 0
+        end
+
+        return tonumber(str, 2)
+    end    
 }
 
 return bop

@@ -71,6 +71,18 @@ local modbus =
     FC_READ_IN_REGS = 0x04,
     FC_WRITE_REG = 0x06,
     FC_WRITE_REGS = 0x10,
+    -- ...
+
+    -- exception code
+    EC_ILLEGAL_FUNC = 0x01,
+    EC_ILLEGAL_ADDR = 0x02,
+    EC_ILLEGAL_VAL = 0x03,
+    EC_SRV_DEV_FAILED = 0x04,
+    EC_ACK = 0x05,
+    EC_SRV_DEV_BUSY = 0x06,
+    EC_MEM_PARITY_ERR = 0x08,
+    EC_GATEWAY_NOT_VALID = 0x0A,
+    EC_GATEWAY_NOT_RES = 0x0B,
 }
 
 function modbus:new(getc, setc, timeout)
@@ -340,12 +352,9 @@ end
 
 
 
-
-
 --------------------------------------------------------------------------------
 -- slaver
 --------------------------------------------------------------------------------
-
 local parse_request = {}
 local function req_parser1(data)
     -- word1,word2

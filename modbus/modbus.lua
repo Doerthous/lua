@@ -93,10 +93,10 @@ function modbus:new(getc, setc, timeout)
 
     setmetatable(o, self)
     self.__index = self
-    self.getc = getc
-    self.setc = setc
-    self.timeout = timeout or 100
-    self.running = false
+    o.getc = getc
+    o.setc = setc
+    o.timeout = timeout or 100
+    o.running = false
     return o
 end
 

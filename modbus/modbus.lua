@@ -342,12 +342,12 @@ function modbus:read_input_registers(id, address, count)
 end
 function modbus:write_register(id, address, data)
     send_cmd1(self, id, modbus.FC_WRITE_REG, address, data)
-    return recv_res2(mb, id, modbus.FC_WRITE_REG)
+    return recv_res2(self, id, modbus.FC_WRITE_REG)
 end
 function modbus:write_registers(id, address, data)
     send_cmd2(self, id, modbus.FC_WRITE_REGS, address, 
         #data, uint8(2*#data), data)
-    return recv_res2(mb, id, modbus.FC_WRITE_REGS)
+    return recv_res2(self, id, modbus.FC_WRITE_REGS)
 end
 
 

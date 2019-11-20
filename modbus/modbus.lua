@@ -164,7 +164,7 @@ local function read_data_len(mb, data, count)
     end
     data[#data+1] = ch
     if ch ~= count * 2 then
-        return modbus.DATA_LEN_ERR
+        return modbus.DATA_LEN_ERR, data
     end
 
     return modbus.OK, data
@@ -276,7 +276,7 @@ local function recv_res1(mb, id, func, word_count)
     --- read id
     err, data = read_id(mb, data, id)
     if err ~= modbus.OK then
-        return err
+        return err, data
     end
     --- read function code
     err, data = read_func_code(mb, data, func)
@@ -286,12 +286,12 @@ local function recv_res1(mb, id, func, word_count)
     --- read data len
     err, data = read_data_len(mb, data, word_count)
     if err ~= modbus.OK then
-        return err
+        return err, data
     end    
     --- read data     
     err, data = read_data(mb, data, word_count)
     if err ~= modbus.OK then
-        return err
+        return err, data
     end  
     --- read crc
     err, data = read_and_check_crc(mb, data)  
@@ -299,7 +299,7 @@ local function recv_res1(mb, id, func, word_count)
         return err, parse_response[data[2]](data)
     end
 
-    return err
+    return err, data
 end
 local function recv_res2(mb, id, func)
     -- handle response
@@ -308,7 +308,7 @@ local function recv_res2(mb, id, func)
     --- read id
     err, data = read_id(mb, data, id)
     if err ~= modbus.OK then
-        return err
+        return err, data
     end
     --- read function code
     err, data = read_func_code(mb, data, func) 
@@ -318,7 +318,7 @@ local function recv_res2(mb, id, func)
     --- read data
     err, data = read_data(mb, data, 2)
     if err ~= modbus.OK then
-        return err
+        return err, data
     end 
     --- read crc
     err, data = read_and_check_crc(mb, data)   
@@ -326,7 +326,7 @@ local function recv_res2(mb, id, func)
         return err, parse_response[data[2]](data)
     end
 
-    return err
+    return err, data
 end
 
 

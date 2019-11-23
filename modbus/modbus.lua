@@ -65,6 +65,7 @@ local modbus =
     FUNC_CODE_ERR = 2,
     DATA_LEN_ERR = 3,
     CRC_ERR = 4,
+    EXCEPTION = 5,
 
     -- function code
     FC_READ_HD_REGS = 0x03,    
@@ -119,29 +120,52 @@ local function read_id(mb, data, id)
         end
     end
 
-    return modbus.READ_TIMEOUT
+    return modbus.READ_TIMEOUT, data
+end
+local function read_and_check_crc(mb, data)
+    local crcl = 0
+    local crch = 1
+
+    --- read crc
+    crcl = uint8(mb.getc(mb.timeout))
+    if crcl == nil then
+        return modbus.READ_TIMEOUT, data
+    end
+    crch = uint8(mb.getc(mb.timeout))
+    if crch == nil then
+        return modbus.READ_TIMEOUT, data
+    end
+    --- crc check 
+    if modbus_crc(data, #data) ~= bop.bor(bop.lshift(crch, 8), crcl) then
+        return modbus.CRC_ERR, data
+    end
+
+    data[#data+1] = crcl
+    data[#data+1] = crch
+
+    return modbus.OK, data
 end
 local function read_exception_code(mb, data)
     local ec = uint8(mb.getc(mb.timeout))
     if ec == nil then
-        return modbus.READ_TIMEOUT
+        return modbus.READ_TIMEOUT, data
     end
 
     data[#data+1] = ec
 
     err, data = read_and_check_crc(mb, data)
     if err ~= modbus.OK then
-        return err
+        return err, data
     end
 
-    return err, ec
+    return modbus.EXCEPTION, ec
 end
 local function read_func_code(mb, data, func_code)
     local ch = 0
 
     ch = uint8(mb.getc(mb.timeout))
     if ch == nil then
-        return modbus.READ_TIMEOUT
+        return modbus.READ_TIMEOUT, data
     end
     data[#data+1] = ch
 
@@ -160,7 +184,7 @@ local function read_data_len(mb, data, count)
     --- read data length
     ch = uint8(mb.getc(mb.timeout))
     if ch == nil then
-        return modbus.READ_TIMEOUT
+        return modbus.READ_TIMEOUT, data
     end
     data[#data+1] = ch
     if ch ~= count * 2 then
@@ -175,33 +199,10 @@ local function read_data(mb, data, count)
     for i = 1, count*2 do
         ch = uint8(mb.getc(mb.timeout))
         if ch == nil then
-            return modbus.READ_TIMEOUT
+            return modbus.READ_TIMEOUT, data
         end
         data[#data+1] = ch
     end
-
-    return modbus.OK, data
-end
-local function read_and_check_crc(mb, data)
-    local crcl = 0
-    local crch = 1
-
-    --- read crc
-    crcl = uint8(mb.getc(mb.timeout))
-    if crcl == nil then
-        return modbus.READ_TIMEOUT
-    end
-    crch = uint8(mb.getc(mb.timeout))
-    if crch == nil then
-        return modbus.READ_TIMEOUT
-    end
-    --- crc check 
-    if modbus_crc(data, #data) ~= bop.bor(bop.lshift(crch, 8), crcl) then
-        return modbus.CRC_ERR
-    end
-
-    data[#data+1] = crcl
-    data[#data+1] = crch
 
     return modbus.OK, data
 end
